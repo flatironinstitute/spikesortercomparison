@@ -1,0 +1,101 @@
+\documentclass[10pt]{article}
+\textwidth 6.5in
+\oddsidemargin=0in
+\evensidemargin=0in
+\usepackage{graphicx,bm,amssymb,amsmath,amsthm}
+\newcommand{\bi}{\begin{itemize}}
+\newcommand{\ei}{\end{itemize}}
+\newcommand{\ben}{\begin{enumerate}}
+\newcommand{\een}{\end{enumerate}}
+\newcommand{\be}{\begin{equation}}
+\newcommand{\ee}{\end{equation}}
+\newcommand{\bea}{\begin{eqnarray}} 
+\newcommand{\eea}{\end{eqnarray}}
+\newcommand{\ba}{\begin{align}} 
+\newcommand{\ea}{\end{align}}
+\newcommand{\bse}{\begin{subequations}} 
+\newcommand{\ese}{\end{subequations}}
+\newcommand{\bc}{\begin{center}}
+\newcommand{\ec}{\end{center}}
+\newcommand{\bfi}{\begin{figure}}
+\newcommand{\efi}{\end{figure}}
+\newcommand{\ca}[2]{\caption{#1 \label{#2}}}
+\newcommand{\ig}[2]{\includegraphics[#1]{#2}}
+\newcommand{\tbox}[1]{{\mbox{\tiny #1}}}
+\newcommand{\mbf}[1]{{\mathbf #1}}
+\newcommand{\pO}{{\partial\Omega}}
+\newcommand{\half}{\mbox{\small $\frac{1}{2}$}}
+\newcommand{\vt}[2]{\left[\begin{array}{r}#1\\#2\end{array}\right]} % 2-col-vec
+\newcommand{\mt}[4]{\left[\begin{array}{rr}#1&#2\\#3&#4\end{array}\right]} % 2x2
+\newcommand{\xx}{\mbf{x}}
+\newcommand{\ff}{\mbf{f}}
+\newcommand{\yy}{\mbf{y}}
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\ttt}{{\bm \theta}}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\eeps}{\bm{\eps}}
+\newcommand{\HH}{{\cal H}}
+\DeclareMathOperator{\re}{Re}
+\DeclareMathOperator{\im}{Im}
+\newtheorem{thm}{Theorem}
+\newtheorem{cnj}[thm]{Conjecture}
+\newtheorem{lem}[thm]{Lemma}
+\newtheorem{cor}[thm]{Corollary}
+\newtheorem{pro}[thm]{Proposition}
+\newtheorem{rmk}[thm]{Remark}
+
+\begin{document}
+\title{Notes on metrics and datasets for community spike sorting validation}
+\author{Alex Barnett}
+\date{\today}
+\maketitle
+\begin{abstract}
+  We sketch some ideas coming from the discussion in the last part of the
+  Janelia spike sorting meeting of 2/22/18.
+\end{abstract}
+
+We are in the process of hosting at Flatiron a web-based platform where
+a variety of spike-sorting packages are run on
+a set of community-approved ground-truthed datasets, and their
+performance metrics made publicly available online via an interactive
+front-end (possibly also with an API).
+
+Curating and gathering such datasets and metrics is a community effort.
+Please give feedback and/or additions to this document.
+As part of a
+
+
+A meta-goal is to gather information about which quality metrics that
+are computable without ground-truth most closely match the ground-truth
+accuracy metric.
+
+\section{Datasets}
+
+
+At the meeting was discussed the following datasets with some form of
+ground-truth. They fall into three categories.
+\ben
+\item Recordings with ground-truth
+  \item
+
+    
+    
+  \een
+
+  It was noted that there are no ground-truthed recordings in
+  awake, let alone behaving, animals.
+  Please correct me if I got this wrong.
+
+  
+\section{Metrics}
+
+It seems there is a useful classification of metrics, in descending order of
+confidence.
+
+
+
+\bi
+\item Class I metrics.
+
+
+\subsection{Other metrics}
