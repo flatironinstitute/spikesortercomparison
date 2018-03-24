@@ -2,7 +2,8 @@
 \textwidth 6.5in
 \oddsidemargin=0in
 \evensidemargin=0in
-\usepackage{graphicx,bm,amssymb,amsmath,amsthm}
+\usepackage{graphicx,bm,amssymb,amsmath,amsthm,url}
+
 \newcommand{\bi}{\begin{itemize}}
 \newcommand{\ei}{\end{itemize}}
 \newcommand{\ben}{\begin{enumerate}}
@@ -46,13 +47,17 @@
 
 \begin{document}
 \title{Notes on metrics and datasets for community spike sorting validation}
-\author{Alex Barnett}
+\author{Alex Barnett, Flatiron Institute}
 \date{\today}
 \maketitle
 \begin{abstract}
-  We sketch some ideas coming from the discussion in the last part of the
-  Janelia spike sorting meeting of 2/22/18.
+  We sketch and extend some ideas from the discussion in the last part of the
+  Janelia spike sorting meeting of 2/22/18. In an attempt to get the ball rolling, this will include some
+  subjective opinions. This could form the basis of a white paper.
+  The community should suggest changes.
 \end{abstract}
+
+\section{Background and goals}
 
 We are in the process of hosting at Flatiron a web-based platform where
 a variety of spike-sorting packages are run on
@@ -60,42 +65,275 @@ a set of community-approved ground-truthed datasets, and their
 performance metrics made publicly available online via an interactive
 front-end (possibly also with an API).
 
-Curating and gathering such datasets and metrics is a community effort.
-Please give feedback and/or additions to this document.
-As part of a
-
+The main goal is an objective accuracy comparison of current
+spike sorting codes. This should indicate for the e-phys community
+the best code to use and its expected accuracy (or distribution of
+accuracies across units),
+both of which may depend on contex (probe type, in/ex vivo, whether you have GPU, etc).
 
 A meta-goal is to gather information about which quality metrics that
 are computable without ground-truth most closely match the ground-truth
 accuracy metric.
 
+Curating and gathering such datasets and metrics is a community effort.
+Please give feedback and/or additions to this document.
+
+
+\subsection{Abbreviations used}
+
+\begin{tabular}{ll}
+GT & ground-truth(ed)\\
+AC & auto-correlation of firing events for a single sorted unit\\
+CC & cross-correlation of firings between different sorted units\\
+\end{tabular}
+
+
+
+\section{Considerations}
+\label{s:cons}
+
+One issue is whether to upload {\em sorted data} or {\em algorithms};
+the consensus seemed to be both.
+We have already wrapped several popular algorithms
+to run in the MountainLab framework, and will continue in this
+mode initially.
+We can run algorithms from a github repo with a dockerfile, which
+could become a standard submission format.
+Being careful about version numbers will be important as groups
+start to update their algorithms.
+
+Held-out or {\em hidden} data in the style of the NetFlix Challenge might
+be useful.
+We are not yet planning to do this.
+
+All algorithms benchmarked have to be {\em full automatic},
+come with some {\em meta-data} such the parameter set, version number, etc.
+Algorithms should be cleanly separated from any visualization/GUI tools.
+
+One cannot proceed without a
+standard {\em interface} between algorithms and e-phys datasets.
+We suggest that the interface be:
+
+\vspace{2ex}
+
+\begin{minipage}[t]{1in}INPUT:\end{minipage} \begin{minipage}[t]{5in}
+    Raw voltage as a matrix of size {\em number of channels} by
+  {\em number of
+    time-points}, stored in eg 16-bit signed interger format,
+  with all channels stored
+  contiguously for each timepoint (ie column-major order).
+  \end{minipage}
+
+\begin{minipage}[t]{1in}OUTPUT:\end{minipage} \begin{minipage}[t]{5in}
+  For each event, 
+  a firing time (either in seconds or in time samples of the input)
+  and label (unit assignment).
+  This could take the form of a 2 by {\em number of events found} matrix.
+\end{minipage}
+
+\vspace{2ex}
+
+The advantage is that no inner workings of algorithms are touched;
+there are algorithms such as ICA that have no pipeline stages
+in common with other algorithms. (Benchmarking sub-stages is a separate
+task that we do not tackle here.)
+Writing wrappers and format-converters is easy, and should not
+slow down the sorter unless the (large) input data is converted.
+All quantities of interest to display in a web-based exploration
+of the sorting result (peak channel, mean waveform, etc)
+can be derived from the union of above input and output data;
+some of these are expensive but can be computed after algorithm runs and cached.
+
+A disadvantage of the interface is that it does not allow for probabilistic
+outputs; however, there are currently few if any spike sorters that produce
+such outputs. A viable patch to such a probabilistic output
+is to draw 20 independent samples from it and compute all metrics
+for each sample, giving distributions of each metric.
+
+
 \section{Datasets}
 
+It was agreed that a variety of brain regions, probes, and types of
+data are needed.
+We discussed some of the following datasets.
+They fall into three categories.
 
-At the meeting was discussed the following datasets with some form of
-ground-truth. They fall into three categories.
 \ben
-\item Recordings with ground-truth
-  \item
-
-    
-    
-  \een
-
-  It was noted that there are no ground-truthed recordings in
-  awake, let alone behaving, animals.
-  Please correct me if I got this wrong.
-
+\item {\bf Recordings with ground-truth.}
   
+  Good features: gold-standard.
+
+  Bad features: very small sample size,
+  not in awake animals or various regions yet.
+\footnote{It was noted that there are no ground-truthed recordings in
+  awake, let alone behaving, animals.
+  Please correct me if I got this wrong.}
+
+  \bi
+\item Neto, Kampff et al '16.
+  32-channel and 128-channel with single juxtacellular, in vivo rat cortex.
+  Only 1-2 datasets of each type have a close-enough unit to feasibly sort.
+  
+\item Yger et al. '18.
+    252 channel w/ loose patch, ex vivo mouse retina.
+    Subset at \url{https://dio.org/10.5281/zenodo.1205233}
+
+  \item Franke et al '15 \cite{frankeoverlap}.
+    
+    URL for dataset unknown.
+    
+\item Boyden, possibly (James?)
+
+\item
+Brendon Watson's recent thread at 
+\url{https://groups.google.com/forum/#!topic/klustaviewas/pfVC-CMSCTs}
+mentions upcoming: neuropixels GT data from Kampff; data from Dan English.
+  \ei
+  
+\item {\bf Hydrid datasets.}
+  
+  Good features: they embody correct noise model.
+  
+  Bad features: biased towards already-sorted units.
+
+  \bi
+\item Steinmetz, Harris et al, 2016.
+  \url{http://phy.cortexlab.net/data/sortingComparison/datasets/}
+\item A hybrid dataset can be created from sorted units with any dataset;
+  this idea is also described as the ``spike addition metric'' in
+  \cite{validspike} \ldots
+
+  \ei
+  
+\item {\bf Simulated (in-silico) datasets.}
+  
+  Good features: can be abundant, allow arbitrary electrode design and drift
+  simulation.
+
+  Bad features: unvalidated themselves,
+  noise models too clean, no artifacts, no detailed modeling
+  of electrode effects, no non-rigid drift.
+    
+\een
+
+
+
 \section{Metrics}
 
-It seems there is a useful classification of metrics, in descending order of
-confidence.
+These are metrics that would be reported for each algorithm-dataset pair.
+These are just sketched, pending formulae, then scripts that implement them.
 
-
+A possible classification of metrics is as follows;
+the three classes I, II, and III have descending order of
+confidence. Within a class no ordering is implied.
 
 \bi
-\item Class I metrics.
+\item {\bf Accuracy vs ground-truth} (Class I).
+  \ben
+\item If the dataset has a single ground-truth unit (eg via juxta or
+  intra-cellular recording),
+  false negative fraction and false positive fraction for the single sorted
+  unit which best matches the GT. An allowed time-error must be chosen,
+  eg $\pm 1$ ms.
+  If multiple GT units, the best-permuted confusion matrix
+  between the GT and sorted output must be found.
+  \footnote{GT should be in the form of a vector of firing times and labels. Sometimes
+    human work is needed to extract this set from eg an intracellular recording.}
+  \een
+\item {\bf Biophysical metrics} (Class II).
+  \ben
+\item rate of refractory violations (ISI, or AC plots),
+  separately for each unit. Requires choice of ISI lower cut-off, eg 2 ms.
+  Called $\mbf{f}_1^p$ in \cite{Hill2011}.
+\item Existence of unphysical notch in CC. This is useful
+  for seeing missed spikes due to collisions; see eg \cite{chaitu}.
+  We need to choose a notch width. This could be computed faster than
+  the entire set of CCs. Related to $\mbf{f}_3^n$ of \cite{Hill2011}.
+\item Highly-one-sided CC, indicating a bursting pair (or triplet, etc),
+  that has been mistakenly split.
+  Of course, one-sided CCs can occur legitimately due to synaptic coupling;
+  we seek expertise on this.
+\item Refractory gap in CC between a pair that matches the AC of each in the pair; this indicates a false split, due to eg drift.
+\item Disappearance of a unit over time, as an indicator of failure
+  to handle drift.
+\een
+  
+\item {\bf Surrogate quality metrics} not requiring ground-truth (Class III).
+  
+  These can be applied independently to each unit.
+  Crucially, they
+  can all be computed from only the input and output data of Section
+  \eqref{s:cons}.
+  \ben
+\item Peak amplitude of template, divided by RMS signal. Ie, peak SNR.
+\item Noise-overlap \cite{mountainsort}. Is cluster-shape agnostic.
+  \footnote{This replaced the idea of amplitude histogram separation from detection threshold.}
+\item Isolation \cite{mountainsort}. Is cluster-shape agnostic.
+\item 1D projections (eg, amplitude histograms) as used in Pachitariu et al \cite{kilosort}
+\item Mahalanobis-style estimates of false-pos and false-neg rates
+  based on a Gaussian clusters assumption. Requires (re)computing a local
+  feature space.
+  \item Various other quality metrics from Hill et al \cite{Hill2011}
+  \item Various stability metrics requiring reruns of the sorter \cite{validspike}.
+\item Community-supplied quality metrics, that could be uploaded automatically as scripts acting on the data\ldots
+  \een
+
+\item {\bf Other metrics} and meta-data.
+  \ben
+\item Algorithm run-time in seconds. Runs our framework performs would
+  all be on the same machine.
+  This may need a CPU-only and CPU+GPU category.
+\item RAM usage.
+\item Disk usage (temporary intermediate files).
+\item Subjective user reports on ease of installation and use.
+  \een
+  
+\ei
+
+Since algorithm comparison is also needed, Class IV could be metrics
+of similarity of two sorting outputs.
+We suggest that these should be derived from the {\em best-permuted
+confusion matrix} \cite{validspike}.
 
 
-\subsection{Other metrics}
+
+
+\section{Prior work and influences}
+
+We are influenced by several previous versions of online
+comparison tools, including:
+\bi
+\item \url{http://neurofinder.codeneuro.org/}\\
+  J. Freeman's calcium-imaging algorithm comparison.
+  Intuitive interface (click and mouse-over for more detail), submission info,
+  gitter chatroom, contest, cash prizes.
+  We may or may not want the competitive aspect of leaderboard style.
+  No data or outputs are visible, just scores.
+\item \url{http://spikefinder.codeneuro.org/}\\
+  P. Berens, spikes from calcium fluorescence curves, similar to above.
+\item \url{http://spike.g-node.org/}\\
+  In this now-defunct
+  2011-2012 project the user
+  uploads sorted data, which is compared against a {\em hidden} ground truth sorting and optionally published. Layout is a little non-obvious.
+  Tags and owners of algorithms are good.
+\item \url{http://phy.cortexlab.net/data/sortingComparison/}\\
+  N. Steinmetz comparison of several algorithms on hybrid data.
+\item \url{http://www.spikesortingtest.com/}\\
+  C. Mitelut's comparison site. Good collection of recent
+  simulated data, but
+  no algorithms, not yet used by others. Metrics: purity and completeness.
+\item \url{http://simonster.github.io/SpikeSortingSoftware/}\\
+  Large but incomplete list of codes and their features.
+\ei
+
+\section{To do in this document}
+
+Give math symbols to objects and definitions of various metrics.
+
+Finish in-silico dataset list.
+
+
+\bibliographystyle{abbrv}
+\bibliography{spikesorting}
+
+\end{document}
