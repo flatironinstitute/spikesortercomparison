@@ -1,0 +1,12 @@
+Accuracy vs. Ground Truth
+=========================
+
+The validation metric that is most straightforward to interpret is accuracy versus ground truth. However this does not mean it is simple to implement or even define.
+
+Suppose we have a dataset (e-phys timeseries) $X$ and a collection of ground-truthed units $C^*_1,\dots,C^*_K^*$ for which we have a set of known true spike times. Thus, the ground-truth events are given to us as $E^*=\{(t^*_i,k^*_i)\}$ where $t^*_1,\dots,t^*_L$ are the true spike times and $k^*_1,\dots,k^*_L^*$ are the corresponding unit labels. Now, let $E=\{(t_i,k_i)\}$ be the output of some sorting algorithm. How to quantify the accuracy of the sorting $E$?
+
+Depending on how the ground-truth data was acquired, we may have only a single ground-truth unit ($K^*=1$), a few ground-truth units, or perhaps many hundreds or thousands. Considering the $K^*=1$ scenario first, we should find the best matching cluster $k_{best}$ and then count the number of matching events between the true unit and this cluster. We can then report the false positive and false negative rates as well as other accuracy measures computed from this count together with the total sizes of the true cluster and the best matching cluster. [TODO: how to define the best matching cluster, and how to define false negative rate, false positive rate, and accuracy]
+
+This approach can generalize to $K^*>1$. In general we can let $k_{best}(k^*)$ be the cluster in the sorting $E$ that best matches the true unit $k^*$ in $E^*$. This does not exclude the possibility that the same cluster may be used more than once as the best match to ground truth units. However, for the purpose of reporting false negative and false positive rates, this does not pose a problem. This seems to be the most straightforward way to handle reporting accuracy for large numbers of ground truth units. Note that we do not need to permute the confusion matrix.
+
+For relatively small datasets, the confusion matrix can provides more details on the accuracy of the sorting, and can provide insight into false merges or false splits in the clusters. It is an integer matrix providing the number of events in the sorting that match each ground truth unit. [TODO: finish detailed definition of the confusion matrix, link to code, and describe optimal permutations].
