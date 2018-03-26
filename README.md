@@ -1,12 +1,9 @@
-# spikesortercomparison
+# Spike Sorter Comparison
 
-Workspace for community spike sorting validation and comparison
-via ground-truthed datasets.
+The purpose of this repo is to sketch out a white paper for planning and preparing a community spike sorting validation and comparison website. This is a follow up from the discussion in the last part of the Janelia spike sorting meeting of 2/22/18.
 
-Authors: the Flatiron spike-sorting team.
-
-Jeremy Magland, James Jun, Alex Barnett, Leslie Greengard, Witold Wysota.
+The Flatiron spike-sorting team: Jeremy Magland, James Jun, Alex Barnett, Leslie Greengard, Witold Wysota.
 
 ## Contents
 
-Currently just a latex document with some notes.
+metrics_datasets_notes.tex - draft of the white paper
