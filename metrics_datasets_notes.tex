@@ -45,22 +45,21 @@
 \newtheorem{pro}[thm]{Proposition}
 \newtheorem{rmk}[thm]{Remark}
 
-\newcommand{\mar}[1]{{\marginpar{\sffamily{\scriptsize #1}}}}
-\newcommand{\ahb}[1]{{\mar{AB:#1}}}          % co-author comments
-\newcommand{\jfm}[1]{{\mar{JM:#1}}}
+\newcommand{\com}[1]{{\marginpar{\sffamily{\scriptsize #1}}}}
+%\newcommand{\ahb}[1]{{\com{AB:#1}}}          % co-author comments
 
 
 \begin{document}
-\title{Proposal on metrics and datasets for spike sorting validation}
-\author{Alex Barnett and Jeremy Magland, Flatiron Institute}
-\date{\today}
+\title{Proposed for web-based spike sorting validation}
+\author{Alex Barnett, Jeremy Magland, and James Jun}
+\date{Flatiron Institute, \today}
 \maketitle
 \begin{abstract}
-  We sketch and extend some ideas from the discussion at the
-  Janelia spike sorting meeting of 3/22/18.
   We lay out some choices for metrics and datasets for a community effort to
-  compare and validate the major spike sorting packages.
-  There is some discussion and personal opinions.
+  compare and validate the major spike sorting packages, hosted at Flatiron.
+  This includes summarizing and extending some ideas from the discussion at the
+  Janelia spike sorting meeting of 3/22/18.
+  It also includes discussion and some subjective opinions.
   This document will be open to suggestions from the electrophysiology community.
 \end{abstract}
 
@@ -70,14 +69,15 @@ We are in the process of hosting at Flatiron a web-based platform where
 a variety of spike-sorting packages are run on
 a set of community-approved ground-truthed datasets, and their
 performance metrics made publicly available online via an interactive
-graphical front-end, and probably via an API.
+graphical front-end, and probably also via an API.
 
-The main goal is an objective accuracy comparison of current
-spike sorting codes. This should indicate for the e-phys community
+The main goal is an objective accuracy comparison of the major current
+spike sorting codes. This should indicate for the electrophysiology community
 the best code to use, and its expected accuracy (or distribution of
 accuracies across units),
 both of which may depend on context
-(probe type, in/ex vivo, whether you have GPU, etc).
+(probe type, in/ex vivo, etc). A best code choice may also depend on
+your computer resources (RAM, GPU, etc).
 
 A meta-goal is to gather information about which {\em quality metrics}, meaning
 metrics computable without ground-truth data, most closely indicate ground-truth
@@ -85,7 +85,12 @@ accuracy when it is available.
 
 Curating and gathering such datasets and metrics is a community effort.
 Please give feedback and/or additions to this document.
-\ahb{one way to comment is in the margin like this}
+There are three ways to comment (in decending order of convenience for us):
+1) post a git issue to
+this repository; 2) use the gitter chat room for this repository;
+3) make a pull request with changes to this document.
+\com{possibly via margin comments like this}
+
 
 \subsection{Abbreviations}
 
@@ -94,6 +99,7 @@ GT & ground-truth(ed)\\
 AC & auto-correlation of firing events for a single sorted unit\\
 CC & cross-correlation of firings between different sorted units\\
 (BP)CM & (best-permuted) confusion matrix \cite{validspike}\\
+e-phys & electrophysiological\\
 \end{tabular}
 
 \subsection{Mathematical symbols}
@@ -101,66 +107,44 @@ CC & cross-correlation of firings between different sorted units\\
 
 \begin{tabular}{ll}
   $M$ & number of channels (electrodes)\\
-  $N$ & number of time points (samples)\\
-  $X$ & $M$-by-$N$ matrix of voltages at each time point, with elements $x_{mn}$\\
-  $t_j$ & time (in samples) of the $j$th firing event\\
+  $T$ & number of time points (samples)\\
+  $X$ & $M$-by-$T$ matrix of voltages at each time point, with elements $x_{mn}$\\
+  $L$ & number of firing events output by a sorter\\
+  $K$ & number of units found by a spike sorter\\
+  $t_j$ & time of the $j$th firing event\\
   $k_j$ & label (ie, unit number or classification) of the $j$th firing event,
   in the range $1,\ldots,K$\\
-  $K$ & number of units found by a spike sorter\\
+  $m_j$ & peak electrode number (in the range $1$ to $M$) of the $j$th firing event\\
   $Q_{kl}$ & confusion matrix element, equal to the
   number of time-matching events labeled $k$ in sorting 1 and $l$ in sorting 2\\
 \end{tabular}
 
 
 
-
-\section{Considerations}
-\label{s:cons}
-
-One issue is whether to upload {\em sorted data} or {\em algorithms};
-the consensus at the meeting seemed to be both.
-(Algorithms are harder to upload, but allow the website to show more complete
-information such as runtime, RAM usage, etc; they also reduce the potential
-for hand-tweaking of results.)
-We have already wrapped several popular algorithms
-to run in the MountainLab framework, and will continue in this
-mode initially.
-We can run algorithms from a github repo with a dockerfile, which
-could become a standard submission format.
-Being careful about version numbers will be important as groups
-start to update their algorithms.
-
-Held-out or {\em hidden} data in the style of the NetFlix Challenge might
-be useful.
-We are not yet planning to do this.
-
-All algorithms benchmarked have to be {\em fully automatic},
-come with some {\em meta-data} such the parameter set, version number, etc.
-Algorithms should be cleanly separated from any visualization/curation/GUI tools.
-Any curation or post-processing (eg based on their internal quality metrics)
-should be automatic and included with the algorithm.
-
-We decided to avoid the computation of confusion matrices for the accuracy
-vs GT; they are not relevant unless there are a large number of units to match.
-% jfm
-
-\subsection{Interface and data formats}
-\label{s:int}
+\section{Data and web interfaces}
 
 One cannot proceed without a
-standard {\em interface} between algorithms and e-phys datasets.
-We suggest that the interface be (see notation in Sec.~\ref{s:symb}):
+standard {\em interface} between algorithms (codes) and e-phys datasets
+(recorded inputs and sorted outputs).
+Deciding on a commonly agreed-upon file format for e-phys datasets and the corresponding metadata is not an easy task.
+However, this is simplified when we split it into two levels:
+the ``mathematical'' interface
+(ie the list of inputs and outputs), distinct from the
+{\em implementation} of this interface (ie particular file formats).
+
+We propose that the mathematical
+interface for spike sorting be (see notation in Sec.~\ref{s:symb}):
 
 \vspace{2ex}
 
 \begin{minipage}[t]{1in}Inputs:\end{minipage} \begin{minipage}[t]{5in}
   $X$: Raw (preferably unfiltered)
   voltage recording, as a matrix of size $M$ (number of channels) by
-  $T$ (number of
-    time-points), stored in binary format without any header.
+  $T$ (number of time-points).
+
+  
+  stored in binary format without any header.
   An example is 16-bit signed integer format
-  with all channels stored
-  contiguously for each timepoint (ie column-major order).
   Since some available data is already filtered, we must also allow
   filtered data in the same format.
 
@@ -169,35 +153,138 @@ We suggest that the interface be (see notation in Sec.~\ref{s:symb}):
   \end{minipage}
 
 \begin{minipage}[t]{1in}Output:\end{minipage} \begin{minipage}[t]{5in}
-  Lists of firing times $t_j$ and labels (unit assignments) $k_j$
-  for the found events $j=1,\ldots,N$. Time is either in seconds or in
-  time samples of the input.
-  This can take the form of a 2-by-$N$ (number of events found) matrix.
-  Events needn't be ordered in time.
+  Lists of firing times $t_j$ and labels (unit or cluster assignments) $k_j$
+  for each found event $j=1,\ldots,L$. Time is given in units of samples;
+  the labels are integers between 1 and $K$.
+  We choose to require a third output: the list of electrode numbers
+  $m_j$ on which each event peaks (integers between $1$ and $M$).
+  Events $j=1,\ldots,L$ need not be ordered in time, but should obviously
+  be consistently ordered in the above three lists.
 \end{minipage}
 
 \vspace{2ex}
 
-The advantage of this simple output format
-is that no inner workings of algorithms are touched;
-there are algorithms such as ICA that have no pipeline stages
-in common with other algorithms. (Benchmarking sub-stages is a separate
-task that we do not tackle here.)
-Writing wrappers and format-converters is easy, and should not
-slow down the sorter unless the (large) input data is converted.
-All quantities of interest to display in a web-based exploration
-of the sorting result (peak channel, mean waveform, etc)
-can be derived from the union of above input and output data;
-some of these are expensive but can be computed after an algorithm runs and cached.
-
-A disadvantage of the interface is that it does not allow for
-probabilistic outputs (that were discussed at the meeting); however,
+{\bf Notes:}
+\ben
+\item
+The minimal interface to a spike sorter, that allows any kind of
+algorithm (including ones with very different internal mechanics such as ICA that do not have a detection stage),
+is input $X$ and outputs $\{t_j\}$ and $\{k_j\}$ \cite{validspike}.
+\com{Benchmarking stages such as detection was discussed, but is a separate task that we do not tackle here.}
+All  quantities of interest to display in a web-based exploration
+of the sorting result---in particular mean spike waveforms---%
+can be derived from the union of this input and output data.
+\item
+For convenience of validation in the many-electrode setting, we also propose
+to require the third output $\{m_j\}$.
+While this output could easily be generated from the other two,
+by computing the mean waveforms and then finding their maximum over
+time and channel,
+most algorithms already provide this data,
+and it is useful to avoid its recomputation.
+We will provide a utility that computes it
+as part of wrapping algorithms that do not provide it.
+\item
+  Probabilistic outputs were discussed at the meeting; however,
 there are currently few if any spike sorters that produce such
-outputs. In addition, a viable patch to such a probabilistic output is
-to draw $\sim 20$ independent samples from it and compute all metrics for
+outputs.
+The above interface could also handle a sorter giving probabilistic outputs
+by
+drawing $\sim 20$ independent samples from it and recomputing all metrics for
 each sample, giving distributions of each metric.
+\een
+
+\subsection{Formats for input dataset}
+\label{s:int}
+
+The raw voltages $X$ (multi-channel timeseries arrays) should be stored
+in simply binary format,
+with channels stored contiguously for each timepoint, ie column-major order
+for the matrix $X$.
+(Various formats were discussed at Janelia, but it was agreed that
+avoiding time-consuming conversions between formats was essential.)
+The accompanying metadata that the sorter has access to will
+specify $M$ the number of channels, the sample rate (Hz), the duration $T$,
+and the raw datatype (e.g. {\tt int16}, {\tt float32}, etc).
+The metadata should
+also contain a list of two-dimension coordinates of the electrodes,
+preferably in $\mu$m units.
+We are aware that many ``raw'' voltages are already filtered.
+\com{We are not sure whether filtering information should be part of the
+  metadata that the sorter sees}
+
+We plan to write wrappers to convert other binary formats to the above.
+We may need to
+accommodate the sitation where a large timeseries is stored in a sequence of
+files to be concatenated.
+
+\subsection{Format for sorted output}
+
+We propose that the above three lists be output in
+a single $3$-by-$L$ matrix:
+
+\bi
+\item row 1: the peak electrodes $m_j$
+\item row 2: the firing times $t_j$, in units of samples where
+the first sample is $1$ and the last $T$. These should allow real numbers
+(and should be double-precision since $T>10^8$ timepoints is common).
+\item row 3: the labels $k_j$
+\ei
+  
+Since the middle row requires a 64-bit format, we propose that the
+other two rows also be 64-bit double-precision, which will be rounded
+to integers.
+
+For sorters that do not produce this output, we plan to
+write simple format converter utilities.
 
 
+\subsection{Hosting of ground-truthed datasets}
+
+We already have in place a mechanism for uploading and sharing datasets.
+We propose to host standard datasets, in two categories:
+official datasets that metrics are computed on
+(see the next section),
+and unofficial test datasets that are needed for development and testing.
+Each new candidate for a standard dataset should first be uploaded, viewed and tested before being included in the standard set.
+
+\subsection{Hosting of sorting algorithms and outputs}
+
+One discussion at the meeting was 
+whether to upload {\em algorithms} (codes) or {\em sorted data};
+the consensus at the meeting seemed to be both.
+(Algorithms are harder to upload, but allow the website to show more complete
+information such as runtime, RAM usage, etc; they also reduce the potential
+for hand-tweaking of results.)
+
+{\bf Algorithms.}
+If a sorting algorithm is wrapped and registered as a MountainLab processor (see \url{https://github.com/flatironinstitute/mountainlab-js}), then the execution of that algorithm against the standard datasets may be automatically included in a nighly spike sorting run.
+We have wrapped several major algorithms this way.
+
+All algorithms benchmarked have to be {\em fully automatic},
+come with some {\em meta-data} such the parameter set, version number, etc.
+They
+should be cleanly separated from any visualization/curation/GUI tools.
+Any curation or post-processing (eg based on their internal quality metrics)
+should be automatic and included with the code.
+
+All wrapped procedures would ideally operate on data in the standard agreed-upon format and output results in the standard format described above. However, we will also provide tools for converting between formats to accommodate different file conventions.
+
+{\bf Sorting outputs.}
+We also plan to allow
+direct uploading of spike sorting results in the format described above.
+
+Other ideas discussed at the meeting that we do not have plans to
+implement yet include:
+1) held-out or {\em hidden} data in the style of the NetFlix Challenge.
+2) running codes from an arbitrary github repo with a dockerfile (which
+will allow groups to automatically update their algorithms).
+
+
+
+
+
+% DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD
 \section{Datasets}
 
 It was agreed that a variety of brain regions, recording conditions, probes, and types of data are needed.
@@ -210,13 +297,15 @@ They fall into three categories.
   Good features: gold-standard.
   Bad features: very small sample size,
   not in awake animals or various regions yet.
-\footnote{It was noted that there are no ground-truthed recordings in
-  awake, let alone behaving, animals.
-  Please correct me if I got this wrong.}
+\footnote{It was noted that there are almost no ground-truthed recordings in
+  awake, let alone behaving, animals. A possible exception is the recent
+  thesis of Bryan Allen \cite{allenthesis}
+  in which the animal is only lightly anesthetized or awake.}
 
   \bi
-\item Neto, Kampff et al '16. \cite{neto16}
-  32-channel and 128-channel with single juxtacellular GT, in vivo rat,
+\item Neto, Kampff et al. '16. \cite{neto16}
+  32-channel and 128-channel (20 $\mu$m pitch)
+  with single juxtacellular GT, in vivo rat,
   anesthetized, motor, sensory or parietal cortex, 30 kHz, roughly 10 min long.
   \url{http://www.kampff-lab.org/validating-electrodes/}
   
@@ -239,7 +328,7 @@ They fall into three categories.
   w/ loose patch, in vitro, mouse retina.
   Around 20 recordings of typical length 5 min, each with one GT unit
   with typically 500-5000 firings. Varying SNR of the GT units.
-\ahb{The paper discusses at least 37 neurons; unsure how many GT are available.}
+\com{The paper discusses at least 37 neurons; unsure how many GT are available.}
   
   \url{http://www.yger.net/software/ground-truth-recordings/}
 % Password: gt252.
@@ -248,17 +337,22 @@ They fall into three categories.
 
   To do: decide if all or a subset of datasets should be included.
   
-  \item Franke et al '15 \cite{frankeoverlap}.
+  \item Franke et al. '15 \cite{frankeoverlap}.
     Tetrode with {\em dual} patch-clamp GT units, ex vivo rat cortex.
     33.3kHz.
     Includes 25000 spikes with overlaps of less than 1.5 ms induced by
     current injections, designed to test overlapping (colliding) spikes.
     To do: write to authors and ask for data.
     
-  \item Boyden, possibly (James?)
+  \item Bryan Allen \cite{allenthesis}
+    and Caroline Moore-Kochlachs \cite{carolinethesis} dataset from Boyden lab.
+    Dense array, $11$ $\mu$m.
 
-  \item simultaneous calcium imaging and e-phys (Shepard lab)? Provides low
-    time accuracy, but for larger number of units.
+  \item Simultaneous calcium imaging and e-phys (Yuste and Shepard labs
+    at Columbia; in progress; James Jun will have access to this).
+    Provides low time accuracy in the spontaneous firing case,
+    for approximately a dozen units in a single experiment.
+    Optical excitation may remove time uncertainty.
 
 \item
 Brendon Watson's recent thread at 
@@ -270,7 +364,8 @@ mentions upcoming data from Dan English.
   
   Good features: they embody the correct noise model.
   
-  Bad features: biased towards already-sorted (eg high firing rate) units.
+  Bad features: biased towards already-sorted unit populations
+  (which selects for, eg, high firing rate, manual selection)
 
   \bi
 \item Steinmetz, Harris et al, 2016.
@@ -298,13 +393,15 @@ mentions upcoming data from Dan English.
   each with $\sim150$ channels within the brain. Length unknown.
 
 \item Tetrodes and
-  18-channel polymer probes from Jason Chung et al \cite{mountainsort}.
+  18-channel polymer probes from Jason Chung et al. \cite{mountainsort}.
   The tetrodes are hippocampal in behaving rats, and have three independent
   human sortings available as a vague GT.
   To do: check if data can be released.
   
 \ei
   
+It is worth mentioning that.
+
 
   \item {\bf Simulated (in-silico) datasets.}
   
@@ -314,7 +411,7 @@ mentions upcoming data from Dan English.
 
   Bad features: unvalidated themselves,
   noise models too clean, no artifacts, no detailed modeling
-  of electrode effects, no non-rigid drift.
+  of electrode effects, harder to simulate non-rigid drift.
 
   \bi
 \item BioNET (Allen Institute) simulations, by C. Mitelut.
@@ -324,13 +421,13 @@ mentions upcoming data from Dan English.
   
   These are expensive to run.
   
-\item {\tt ViSAPy} simulations, Hagen et al 2015 \cite{visapy}.
+\item {\tt ViSAPy} simulations, Hagen et al. 2015 \cite{visapy}.
 
   The repo contains scripts for 16-channel polytrodes, etc.
   
   \url{https://github.com/espenhgn/ViSAPy}
 
-  Yger et al \cite{yger18} uses this code but doesn't report data.
+  Yger et al. \cite{yger18} uses this code but doesn't report data.
   We have not yet used it.
 
   \ei
@@ -345,8 +442,8 @@ much lower noise, almost no drift, partial validation by planar coverage of
 certain cell types (eg ON/OFF parasol), and axonal spikes that are non-local
 (propagate across the entire array).
 \item
-We exclude other well-known datasets (eg Harris et al
-tetrode from 2000, Martinez et al synthetic from 2009, Cmunas-Mesa et
+We exclude other well-known datasets (eg Harris et al.
+tetrode from 2000, Martinez et al. synthetic from 2009, Cmunas-Mesa et
 al Neurocube simulator from 2013) that are either too small or have
 been superceded.
 \een
@@ -372,7 +469,7 @@ We first give an extensive list; below we propose a concrete subset.
     human work is needed to extract this set by thresholding eg an intracellular or juxtacellular recording; often there is a subjective choice of threshold.
   
   \ben
-\item Inaccuracy.
+\item False negative fraction.
   For a given GT unit, the smallest value over the
   sorted units of the ratio: number of spikes missed over true number of spikes.
   Is in range $[0,1]$, with zero best.
@@ -382,9 +479,10 @@ For a given GT unit, the smallest value over the
 sorted units of the ratio: number of spikes not matching GT over number of sorted spikes.
   Is in range $[0,1]$, with zero best.
 
-\item Overall error rate. This combines the above: number of missed plus number
+\item Overall error rate (inaccuracy).
+  This combines the above: number of missed plus number
   of false positives, all divided by the union of true and sorted spikes.
-  This metric is similar but not identical to $f_k$ in \cite{validspike}.
+  This metric is similar but not identical to $1-f_k$ in \cite{validspike}.
   Is in range $[0,1]$, with zero best.
 
   \een
@@ -398,9 +496,11 @@ sorted units of the ratio: number of spikes not matching GT over number of sorte
   We need to choose a notch width. This could be computed faster than
   the entire set of CCs. Related to $\mbf{f}_3^n$ of \cite{Hill2011}.
 \item Highly-one-sided CC, indicating a bursting pair (or triplet, etc),
-  that has been mistakenly split.
+  that has been mistakenly split. Parameters need to be fixed here.
   Of course, one-sided CCs can occur legitimately due to synaptic coupling;
   we seek expertise on this.
+\item ``Burstiness'', assessed by off-diagonal return map
+  (scatterplot of successive ISI for a putative unit, as in JRclust).
 \item Refractory gap in CC between a pair that matches the AC of each in the pair; this indicates a false split, due to eg drift.
 \item Disappearance of a unit over time, as an indicator of failure
   to handle drift.
@@ -416,13 +516,19 @@ sorted units of the ratio: number of spikes not matching GT over number of sorte
   (in)accuracy.
   Crucially, they
   can (and must) all be able to be
-  computed from only the input and output data of Section \eqref{s:int}.
+  computed from only the input and output data of Section \eqref{s:int},
+  and are independent of the sorting algorithm.
   \ben
-\item Peak amplitude of mean template, divided by RMS noise level after filtering.
-  Ie, peak SNR. Noise level (std dev) is estimated from the median $L_2$-norm of
-  clips from the filtered data.
-  This requires a standard definition of filter parameters (not including
-  spatial whitening).
+\item Peak amplitude of mean template, divided by RMS noise level,
+  after filtering.
+  Ie, peak SNR. This is the max over time and electrode number.
+  Noise level ($\sigma$)
+  may be robustly estimated using median absolute deviation (MAD) computed
+  from filtered data,
+  scaled to a Gaussian equivalent $\sigma$ \cite[(3.1)]{spc}.
+  This requires a standard definition of filter parameters purely for the
+  computation of this quality metric.
+  (We would exclude spatial whitening from this.)
 \item Noise-overlap \cite{mountainsort}. Is cluster-shape agnostic.
   \footnote{This replaced the idea of amplitude histogram separation from detection threshold.}
 \item Isolation \cite{mountainsort}. Is cluster-shape agnostic.
@@ -442,7 +548,7 @@ sorted units of the ratio: number of spikes not matching GT over number of sorte
   This may need a CPU-only and CPU+GPU category.
 \item Peak RAM usage.
 \item Peak disk usage (temporary intermediate files).
-\item Subjective user opinions on ease of installation and use.
+\item Subjective user opinions on ease of installation, use, parameter adjustment effort, and scalability for large datasets.
   \een
   
 \ei
@@ -456,15 +562,20 @@ The website should be able to produce and display graphically
 the BPCM between any two
 algorithms run on the same data.
 
+
+Note: we decided to avoid the computation of confusion matrices for the accuracy
+vs GT; they are not relevant unless there are a large number of GT
+units to match.
+
 \subsection{Initial implementation plan}
 
-In the first released website we will implement from the above list the following.
+In the first released website we expect to implement from the above list the following.
 Class I: 1,2,3.
 Class II: 1.
 Class III: 1,2,3.
 Class IV: 1.
 
-To be debated.
+%To be debated.
 
 
 
