@@ -50,7 +50,7 @@
 
 
 \begin{document}
-\title{Proposed for web-based spike sorting validation}
+\title{Proposal for web-based spike sorting validation}
 \author{Alex Barnett, Jeremy Magland, and James Jun}
 \date{Flatiron Institute, \today}
 \maketitle
@@ -141,15 +141,6 @@ interface for spike sorting be (see notation in Sec.~\ref{s:symb}):
   $X$: Raw (preferably unfiltered)
   voltage recording, as a matrix of size $M$ (number of channels) by
   $T$ (number of time-points).
-
-  
-  stored in binary format without any header.
-  An example is 16-bit signed integer format
-  Since some available data is already filtered, we must also allow
-  filtered data in the same format.
-
-  Accompanying parameter file(s): giving $M$, $N$,
-  the sample rate (samples per second), and 2D electrode coordinates in $\mu$m.
   \end{minipage}
 
 \begin{minipage}[t]{1in}Output:\end{minipage} \begin{minipage}[t]{5in}
