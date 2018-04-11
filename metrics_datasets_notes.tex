@@ -472,8 +472,7 @@ We first give an extensive list; below we propose a concrete subset.
   issue at the $\le 0.1$ ms level). However $2\tau$ should be less than
   the minimum true ISI; see below.
   
-  We now consider a single GT unit.
-  Let $\{t_j^\tbox{GT}\}_{j=1}^{n_\tbox{GT}}$ be the set of its true firings.
+  We now consider a single GT unit. Let $n_\tbox{GT}$ indicate how many true firings it has, and $\{t_j^\tbox{GT}\}_{j=1}^{n_\tbox{GT}}$ be this set of firing times.
   Usually
   human work is needed to extract this set by manually thresholding eg an intracellular or juxtacellular recording (in our experience,
   thresholding can cause slight variation in number of GT firings claimed, due to bursting).
@@ -504,12 +503,13 @@ We first give an extensive list; below we propose a concrete subset.
   \ee
   where $\eps^\tbox{inac}_k$ is defined by \eqref{inack} below.
 
-  Note: we decided to avoid optimizing for a bijective map from
-  the set of all GT units to sorted units, which requires
-  computation of a confusion matrix and the Hungarian algorithm.
-  With firing time
-  information this becomes algorithmically complex \cite{validspike},
-  and is not relevant unless there are a large number of poorly-sorted
+  Note: even in the case of more than one GT units, we have decided to avoid optimizing for a bijective map from
+  this set of GT units to the sorted units.
+  This would require
+  computation of a confusion matrix, the Hungarian algorithm,
+  and with firing time restrictions this becomes algorithmically ill-defined
+  \cite{validspike}.
+  We believe it is not relevant unless there are a large number of poorly-sorted
   GT units to match.
   Thus it is possible that two GT units will be matched to the same sorted unit;
   we don't see a problem here since it could only happen in a poor sorting.
