@@ -531,7 +531,8 @@ Finally come the Class I accuracy metrics:
   \ee
   We report $\eps^\tbox{FN}_{\tilde k}$, ie, error fraction for the
   best matching sorted unit $\tilde k$.
-  Is in range $[0,1]$, with smaller better.
+  It is in the range $[0,1]$, with smaller better.
+  Note $\eps^\tbox{FN}_k := 1 - $ recall (see \cite[Ch.17]{zakibook}).
   
 \item False positive fraction. 
   For a given GT unit, and a given sorted unit $k$,
@@ -542,8 +543,9 @@ Finally come the Class I accuracy metrics:
   \label{FP}
   \ee
   We report $\eps^\tbox{FP}_{\tilde k}$.
-  Is in range $[0,1]$, with smaller better.
-
+  It is in the range $[0,1]$, with smaller better.
+  Note $\eps^\tbox{FP}_k := 1 - $ precision (see \cite[Ch.17]{zakibook}).
+  
 \item Overall error rate (inaccuracy).
   This combines the above: number of missed plus number
   of false positives, all divided by the union of true and sorted spikes,
@@ -554,12 +556,19 @@ Finally come the Class I accuracy metrics:
     1 - \frac{n_k^\tbox{match}}{n_k + n_\tbox{GT} - n_k^\tbox{match}}~.
   \label{inack}
   \ee
-  This metric is used by James Jun \cite{jrclust}, and is
-  similar but not identical to $1-f_k$ in \cite{validspike}.
+  This metric is used by James Jun \cite{jrclust}.
+  It is similar, but not identical, to
+  one minus the $F_1$-score (a.k.a.\ $F$-measure) \cite[Ch.17]{zakibook},
+  the latter being defined by $2 n_k^\tbox{match} / (n_k + n_\tbox{GT})$.
+  It is also similar to $1-f_k$ in \cite{validspike}.
   \com{A similar possibility is the mean of \eqref{FN} and \eqref{FP} for $\tilde k$.}
-  Is in range $[0,1]$, with smaller better.
-
+  It is in the range $[0,1]$, with smaller better.
   \een
+
+  Jennifer Colonel suggested a using a spatial component to
+  the above accuracy metrics, so that only a nearby-located neuron is
+  matched. We postpone this until the simple version is on the website.
+  
 \item {\bf Biophysical metrics} (Class II).
   \ben
 \item rate of refractory violations (ISI, or AC plots),
@@ -603,9 +612,9 @@ Finally come the Class I accuracy metrics:
   This requires a standard definition of filter parameters purely for the
   computation of this quality metric.
   (We would exclude spatial whitening from this.)
-\item Noise-overlap \cite{mountainsort}. Is cluster-shape agnostic.
+\item Noise-overlap \cite{mountainsort}. This metric is cluster-shape agnostic.
   \footnote{This replaced the idea of amplitude histogram separation from detection threshold.}
-\item Isolation \cite{mountainsort}. Is cluster-shape agnostic.
+\item Isolation \cite{mountainsort}. This metric is cluster-shape agnostic.
 \item 1D projections (eg, amplitude histograms) as used in Pachitariu et al \cite{kilosort}
 \item Mahalanobis-style estimates of false-pos and false-neg rates
   based on a Gaussian clusters assumption. Requires (re)computing a local
@@ -697,6 +706,11 @@ length and size (GB).
 Ask re Franke data.
 
 Quantify and collect the simulated datasets.
+
+
+\section*{Acknowledgments}
+We are grateful for discussions with
+Andrea Giovannucci, and Karel Svoboda and the rest of the Janelia team.
 
 
 \bibliographystyle{abbrv}
