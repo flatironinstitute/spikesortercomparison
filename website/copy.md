@@ -5,11 +5,14 @@
 [notice it includes advice for how to interact - something I believe is needed for users who are older than Gen Z.]
 
 * [version 0.7 by Alex 2/7/19]
+
 * [edited by jfm 2/13/19]
     * removed the manual line breaks and changed headings and other parts to #markdown style
     * changed "Tools" in About page to a new page called "Internals" -- we can discuss
     * drafted "Internals" page -- outline form for now
     * various edits throughout
+
+
 
 ### TODO:
 
@@ -20,6 +23,9 @@
 * when latex MathML understood, fix the subscript mbox's to be right size (eg insert \tiny \rm).
 
 * Provide [link to details] from the Internals page
+
+
+
 
 ## Header
 
@@ -181,16 +187,12 @@ TODO: diagram of dependence of repos and tools.
 
 ## About
 
-headings:   Related Projects      Credits     History and Future    Contact
+headings:   Credits     History and Future    Related Projects      Contact
 
 jfm: note that I moved "Tools" to a new "Internals" page
 
 Put this somewhere: Please use git issues to report problems - and see Contact.
 
-
-### Related Projects
-
-Links to other software repositories
 
 
 Credits
@@ -230,12 +232,11 @@ Early design principles were outlined in our [white paper](https://github.com/fl
 
 Influences for the concept and site design include:
 
-[ClustEval website](https://clusteval.sdu.dk).
-
-Wiwie, C., Röttger, R. & Baumbach, J. Comparing the performance of biomedical clustering methods. Nature Methods (2015).
+* [ClustEval website](https://clusteval.sdu.dk).
+  Wiwie, C., Röttger, R. & Baumbach, J. Comparing the performance of biomedical clustering methods. Nature Methods (2015).
 
 * <a href="http://neurofinder.codeneuro.org/">NeuroFinder</a>
-by Jeremy Freeman, for calcium imaging spatial neuron extraction comparison.
+  by Jeremy Freeman, for calcium imaging spatial neuron extraction comparison.
 
 * <a href="http://spikefinder.codeneuro.org">SpikeFinder</a>,
   by P. Berens, for extracting spikes from calcium imaging
@@ -269,6 +270,13 @@ Hybrid recordings.
 Expansion of SNR to other surrogate metrics: noise overlap, etc.
 
 Stability-based quality metrics.
+
+
+Related Projects
+----------------
+
+Links to other software repositories
+
 
 
 Contact
