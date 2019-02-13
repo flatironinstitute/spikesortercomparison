@@ -1,4 +1,3 @@
-[
 # Copy for SpikeForest website
 
 [this doc is a mix of text, markdown, and latex math between $$, plan to use w/ MathML]
