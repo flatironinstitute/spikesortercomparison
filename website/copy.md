@@ -217,10 +217,21 @@ their vital help:
 
 Loren Frank (UCSD)
 Jason Chung (UCSD)
-Catalin Mitelut (Columbia)
-Dan English (...)
-[please add!]
-ETC
+Catalin Mitelut (Columbia University)
+Sergey Gratiy (Allen Institute)
+Costas Anastassiou (Allen Institute)
+Dan English (Virginia Tech)
+György Buzsáki (NYU)
+Anton Sirota (LMU Munich)
+Adam R. Kampff (UCL)
+André Marques-Smith (UCL)
+Joana P. Neto (UCL)
+Ed Boyden (MIT)
+Brian D. Allen (MIT)
+Caroline Moore-Kochlacs (MIT)
+Pierre Yger (CNRS)
+Giulia LB Spampinato (CNRS)
+Olivier Marre (CNRS)
 
 
 History and future
