@@ -215,12 +215,29 @@ Alex Barnett (concept and site design, testing)
 We are grateful for many collaborators at other institutions for
 their vital help:
 
-Loren Frank (UCSD)
-Jason Chung (UCSD)
-Catalin Mitelut (Columbia)
-Dan English (...)
-[please add!]
-ETC
+- Frank Lab, UCSF
+  - Jason Chung (UCSF)
+  - Loren Frank (UCSF)
+- Allen Institute for Brian Science
+  - Catalin Mitelut (Columbia)
+  - Sergey Gratiy (AIBS)
+  - Costas Anastassiou (AIBS)
+- Buzsaki Lab (NYU)
+  - Dan English (Virginia Tech)
+  - Anton Sirota (LMU Munich)
+  - György Buzsáki (NYU)
+- Kampff Lab, UCL
+  - André Marques-Smith (UCL)
+  - Joana P. Neto (UCL)
+  - Adam R. Kampff (UCL)
+- Boyden Lab, MIT
+  - Ed Boyden (MIT)
+  - Brian D. Allen (MIT)
+  - Caroline Moore-Kochlacs (MIT)
+- Institute de la Vision, CNRS
+  - Pierre Yger (CNRS)
+  - Giulia LB Spampinato (CNRS)
+  - Olivier Marre (CNRS)
 
 
 History and future
