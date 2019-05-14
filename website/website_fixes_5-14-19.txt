@@ -1,0 +1,82 @@
+INTERACTION (D3 etc) -----------------------------
+
+* Scatterplot highlighted blob persists after sorter is changed -
+while it would be good to keep the unit highlighted, so sprays update,
+the y-coord is not being updated.
+
+* spike sprays...
+
+
+
+COSMETIC --------------------------------
+
+
+LAYOUT ON MAIN PAGE - collision of boxes
+
+top-right:
+Precision  1-(...)    needs equals sign, or more space.
+
+
+top row:
+
+Restore "About" as link - otherwise too hard to find (2 levels in)
+
+(i) icon always bumping into "Metrics" on top row.
+
+
+
+DETAILS page:
+
+Click a "marker" -> unit.
+
+Explain that blob area is proportional to num firing events,
+
+and that color indicates which recording within the study.
+
+
+
+METRICS:
+
+
+ABOUT:
+
+History:
+
+flesh out future plans.
+
+
+
+ALGS:
+
+Either have a heading matching other pages, or kill (or shrink) all headings
+on pages!
+
+move blurb to bottom.
+
+
+BOTTOM OF EACH PAGE: Footer.js
+
+
+---------------------- DONE ---------------------------
+
+
+The converse cannot happen ..  -> explain can't have >1 GT matching a
+single sorted event.
+
+broken sortingcomparison.py URL
+
+MAD defn needs | . | not ( . )
+
+Filtering [..] state the filter and point to code.
+
+SPIKEFOREST IS MADE WITH🔬IN NYC🗽      - need to fix spacing, looks weird.
+
+credits check - add copy to me.
+
+text on issues at top too small - and include pointer to UserSnap.
+
+"in part a spike s.."
+ 
+reorg so related projects listed.
+
+
